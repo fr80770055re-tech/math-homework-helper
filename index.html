@@ -7,13 +7,12 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
-        /* 確保直式運算的等寬與對齊 */
         .math-font { font-family: 'Courier New', monospace; letter-spacing: 0.3em; }
         body { margin: 0; overflow-x: hidden; }
     </style>
@@ -25,7 +24,6 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- 子組件：直式運算與詳解 ---
         const MathDetail = ({ type, n1, n2, show }) => {
             if (type === 'mul') {
                 const s2 = n2.toString().split('').reverse();
@@ -43,7 +41,6 @@
                 );
             }
 
-            // 除法逐位扣減邏輯
             const q = Math.floor(n1 / n2);
             const r = n1 % n2;
             const n1Str = n1.toString();
@@ -79,13 +76,11 @@
             );
         };
 
-        // --- 主應用程式組件 ---
         const App = () => {
             const [questions, setQuestions] = useState([]);
             const [config, setConfig] = useState({ mode: 'mix', d1: 3, d2: 2 });
             const [practiceCount, setPracticeCount] = useState(0);
 
-            // 讀取本地紀錄
             useEffect(() => {
                 const saved = localStorage.getItem('math_app_count');
                 if (saved) setPracticeCount(parseInt(saved));
@@ -114,14 +109,13 @@
             const generateAll = () => {
                 const newQs = Array.from({ length: 8 }).map((_, i) => generateSingle(i, config.mode));
                 setQuestions(newQs);
-                
                 const newCount = practiceCount + 1;
                 setPracticeCount(newCount);
                 localStorage.setItem('math_app_count', newCount);
             };
 
             const refreshOne = (e, index) => {
-                e.stopPropagation(); // 防止觸發卡片的點擊顯示詳解
+                e.stopPropagation();
                 setQuestions(qs => qs.map((q, i) => i === index ? generateSingle(index, config.mode) : q));
             };
 
@@ -131,7 +125,6 @@
 
             return (
                 <div className="min-h-screen flex flex-col font-sans">
-                    {/* 頂部導覽列 (對齊截圖風格) */}
                     <header className="bg-blue-600 text-white p-4 shadow-md flex justify-between items-center px-6">
                         <div className="flex items-center gap-2">
                             <span className="text-2xl">📖</span>
@@ -142,10 +135,7 @@
                         </div>
                     </header>
 
-                    {/* 主要內容區 */}
                     <main className="max-w-7xl mx-auto w-full p-6 flex-1 flex flex-col gap-6">
-                        
-                        {/* 控制面板 */}
                         <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-wrap gap-4 items-center justify-between">
                             <div className="flex flex-wrap gap-6 items-center">
                                 <div className="flex items-center gap-2">
@@ -176,7 +166,6 @@
                             </button>
                         </div>
 
-                        {/* 題目網格 (16:9 佈局，4欄) */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {questions.map((q, idx) => (
                                 <div 
@@ -184,7 +173,6 @@
                                     onClick={() => toggleShow(q.id)}
                                     className="bg-white border border-gray-200 rounded-xl p-5 min-h-[400px] shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col relative group"
                                 >
-                                    {/* 頂部：題號與單題重新整理按鈕 */}
                                     <div className="flex justify-between items-center border-b border-gray-100 pb-2 mb-2">
                                         <span className="text-blue-600 font-bold text-sm bg-blue-50 px-2 py-1 rounded">
                                             {q.label}
@@ -202,12 +190,10 @@
                                         {q.type === 'mul' ? '乘法直式' : '除法直式'} (點擊看詳解)
                                     </div>
                                     
-                                    {/* 直式本體 */}
                                     <div className="flex-1 flex justify-center">
                                         <MathDetail {...q} />
                                     </div>
 
-                                    {/* 底部答案區 (預設隱藏，點擊顯示) */}
                                     <div className={`mt-4 pt-3 border-t border-gray-50 text-center text-red-500 font-bold text-lg transition-opacity ${q.show ? 'opacity-100' : 'opacity-0'}`}>
                                         {q.type === 'mul' ? `＝ ${q.n1*q.n2}` : `商：${Math.floor(q.n1/q.n2)}`}
                                     </div>
@@ -219,7 +205,6 @@
             );
         };
 
-        // 渲染 React 到 DOM
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
